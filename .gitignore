@@ -1,0 +1,26 @@
+# Secrets — never commit these. Real keys live only in .env files.
+.env
+.env.local
+*.env.local
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Uploaded files (user documents — keep them off GitHub)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
