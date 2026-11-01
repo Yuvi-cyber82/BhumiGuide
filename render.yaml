@@ -25,5 +25,6 @@ services:
         sync: false
       - key: GROQ_API_KEY       # https://console.groq.com/keys
         sync: false
-      - key: GROQ_MODEL
-        value: llama-3.3-70b-versatile
+      # GROQ_MODEL is deliberately NOT set: utils/groq.js asks the Groq API
+      # which models this key can actually use and picks the best one. An
+      # explicit value overrides that and 404s the moment Groq retires it.
