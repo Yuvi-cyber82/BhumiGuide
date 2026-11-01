@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Home, FileText, Bot, ShieldCheck, BookOpen, Landmark, Send, Sparkles, Info, User, Scale, Stamp } from "lucide-react";
 import { Breadcrumb, Btn, Card, IconBadge, Notice, PageHead, Pill } from "../components/ui";
+import { Markdown } from "../components/Markdown";
 import { fillText, useTr } from "../i18n";
 import { C, FONT } from "../theme";
 import { ask } from "../api/ai";
@@ -141,10 +142,23 @@ export function AIAssistantPage({ t, onNav, loc, profile, lang }) {
                   </div>
                   <div className="mw80">
                     {m.role === "ai" && <div className="t11 font-bold mb-1" style={{ color: C.green }}>{tr("BhumiGuide AI")}</div>}
-                    <div className="rounded-xl px-3.5 py-2.5 text-xs leading-relaxed whitespace-pre-line"
-                      style={{ background: m.role === "ai" ? "#F7F9F8" : C.tint, color: C.body, border: `1px solid ${C.line2}` }}>
-                      {m.text}
-                    </div>
+                    {/* The assistant answers in Markdown — tables, bullets
+                      * and bold. Rendering it as plain text is what used to
+                      * put pipes and asterisks on screen. The user's own
+                      * message is shown verbatim: it is their words, not
+                      * markup, so a stray * in a question stays a *. */}
+                    {m.role === "ai" ? (
+                      <Markdown
+                        text={m.text}
+                        className="rounded-xl px-3.5 py-2.5 text-xs leading-relaxed"
+                        style={{ background: "#F7F9F8", color: C.body, border: `1px solid ${C.line2}` }}
+                      />
+                    ) : (
+                      <div className="rounded-xl px-3.5 py-2.5 text-xs leading-relaxed whitespace-pre-line"
+                        style={{ background: C.tint, color: C.body, border: `1px solid ${C.line2}` }}>
+                        {m.text}
+                      </div>
+                    )}
                     <div className={`t10 mt-1 ${m.role === "user" ? "text-right" : ""}`} style={{ color: C.mute }}>{m.time}</div>
                   </div>
                 </div>

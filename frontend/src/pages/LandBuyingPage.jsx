@@ -113,7 +113,7 @@ export function OfficeLocator({ loc, toast }) {
             <MapPin size={16} style={{ color: C.green }} className="mt-0.5 shrink-0" />
             <div className="min-w-0">
               <div className="text-sm font-bold truncate" style={{ color: C.ink }}>{o.name}</div>
-              <div className="t11 mt-0.5" style={{ color: C.mute }}>{fill("{0} km away", o.distance)} · {o.open ? tr("Open now") : tr("Closed now")}</div>
+              <div className="t11 mt-0.5" style={{ color: C.mute }}>{o.open ? tr("Open now") : tr("Closed now")}</div>
             </div>
           </button>
         ))}
@@ -151,7 +151,7 @@ export function OfficeLocator({ loc, toast }) {
                 </div>
               </div>
               <div className="mt-4 space-y-2.5 text-xs">
-                {[[MapPin, o.address], [Clock, fill("{0} · Closed {1}", tr(o.hours), tr(o.closed))], [Phone, o.phone], [Navigation, fill("{0} km from your selected taluka", o.distance)]].map(([Icon, text], i) => (
+                {[[MapPin, o.address], [Clock, fill("{0} · Closed {1}", tr(o.hours), tr(o.closed))], [Phone, o.phone]].map(([Icon, text], i) => (
                   <div key={i} className="flex gap-2.5">
                     <Icon size={14} style={{ color: C.green }} className="shrink-0 mt-0.5" />
                     <span style={{ color: C.body }}>{text}</span>
@@ -382,7 +382,7 @@ export function LandBuyingPage({ t, onNav, loc, setLoc, toast, done, toggleDone,
 
           <div>
             <h2 className="text-lg font-extrabold mb-1" style={{ color: C.ink }}>{tr("Government offices you will visit")}</h2>
-            <p className="text-xs mb-4" style={{ color: C.mute }}>{tr("Addresses, working hours and distance for")} {loc.taluka || loc.district ? tr(loc.taluka || loc.district) : tr("your area")}.</p>
+            <p className="text-xs mb-4" style={{ color: C.mute }}>{tr("Addresses and working hours for")} {loc.taluka || loc.district ? tr(loc.taluka || loc.district) : tr("your area")}.</p>
             <OfficeLocator loc={loc} toast={toast} />
           </div>
 

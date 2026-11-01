@@ -16,7 +16,6 @@ export function officesFor(state, district, taluka) {
     name: `${o.type.split(" /")[0]}, ${taluka || district}`,
     address: `${o.type.split(" /")[0]}, ${["Station Road", "Civil Lines", "Court Road", "Main Bazar", "Gandhi Chowk"][(seed + i) % 5]}, ${taluka || district}, ${district} District, ${state}`,
     phone: `${o.phone}${(seed + i * 7) % 10}${(seed * 3 + i) % 10}`,
-    distance: (((seed + i * 3) % 14) + 1.2).toFixed(1),
     open: ((seed + i) % 5) !== 0,
   }));
 }

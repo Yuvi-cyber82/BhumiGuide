@@ -40,8 +40,8 @@ async function main() {
  
   app.listen(PORT, () => {
     console.log(`🚀 BhumiGuide Intelligence API running on http://localhost:${PORT}`);
-    if (!process.env.GEMINI_API_KEY) {
-      console.log("ℹ️  GEMINI_API_KEY not set — AI Assistant will use the rule-based fallback.");
+    if (!process.env.GROQ_API_KEY && !process.env.ANTHROPIC_API_KEY) {
+      console.log("ℹ️  No GROQ_API_KEY / ANTHROPIC_API_KEY — AI Assistant will use the rule-based fallback.");
     }
   });
 }

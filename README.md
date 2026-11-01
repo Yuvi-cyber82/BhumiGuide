@@ -4,8 +4,8 @@
 
 **Know exactly what to do, which paper to carry, and what it costs — before you buy land in India.**
 
-A district-aware land-purchase guidance platform for Maharashtra, Karnataka and
-Madhya Pradesh, available in nine Indian languages.
+A district-aware land-purchase guidance platform for Maharashtra, Karnataka,
+Madhya Pradesh, Gujarat and Rajasthan, available in nine Indian languages.
 
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=white)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-5.3-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
@@ -62,13 +62,16 @@ Not one generic checklist. Every state file records what that state actually
 calls a document, what it demands, and what it does not use at all — each with
 the government source it came from, shown in the app as *Official source*.
 
-| | Maharashtra | Karnataka | Madhya Pradesh |
-|---|---|---|---|
-| Land record | 7/12 Extract (Satbara) | RTC / Pahani | Khasra / Khatauni |
-| Issued by | Tehsildar Office | Nadakacheri / Taluk Office | Tehsil Office |
-| Encumbrance | Index II certified copy | Form 15 EC | — |
-| Municipal Khata | not used | mandatory | not used |
-| Mandatory documents | 9 | 10 | 9 |
+| | Maharashtra | Karnataka | Madhya Pradesh | Gujarat | Rajasthan |
+|---|---|---|---|---|---|
+| Land record | 7/12 Extract (Satbara) | RTC / Pahani | Khasra / Khatauni | 7/12 Utara (VF-7 & VF-12) | Jamabandi (Nakal) |
+| Issued by | Tehsildar Office | Nadakacheri / Taluk Office | Tehsil Office | e-Dhara Kendra, Mamlatdar Office | Tehsil Office |
+| Encumbrance | Index II certified copy | Form 15 EC | — | Encumbrance Certificate (Boja) | e-Search, no EC issued |
+| Municipal Khata | not used | mandatory | not used | not used — Property Card instead | not used — Patta instead |
+| Non-agriculturist may buy farmland | no | no | yes | no | yes, except SC/ST land |
+| Stamp duty | 6% | 5% | 7.5% | 4.9% | 7.8% |
+| Female buyer | 1% off duty | — | 2% off duty | registration fee waived | 1.3% off duty |
+| Mandatory documents | 9 | 10 | 9 | 9 | 8 |
 
 ### Charges calculator
 Stamp duty, registration fee, local body tax and the smaller charges, using
@@ -101,14 +104,14 @@ Smart Generator answers and your activity feed follow you to any device.
 
 | | |
 |---|---|
-| States | 3 — Maharashtra, Karnataka, Madhya Pradesh |
-| Districts | 122 |
-| Talukas / tehsils | 814 |
+| States | 5 — Maharashtra, Karnataka, Madhya Pradesh, Gujarat, Rajasthan |
+| Districts | 197 |
+| Talukas / tehsils | 1,501 |
 | Documents explained | 16 |
 | Procedure steps | 7 main + 6 conditional |
-| Local contacts | 1,414 |
+| Local contacts | 1,414 — Maharashtra, Karnataka and MP only |
 | Languages | 9 |
-| Translated strings | 1,733 |
+| Translated strings | 2,523 |
 
 ---
 
@@ -118,7 +121,7 @@ English · हिन्दी · मराठी · தமிழ் · తెల
 
 Every visible string is translated — navigation, forms, government document
 descriptions, toast messages, the in-app article reader, the assistant's
-answers, and all 826 district and taluka names in each script.
+answers, and all 1,511 district and taluka names in each script.
 
 Two design decisions worth noting:
 
@@ -149,7 +152,7 @@ translation and the number drops by itself.
 | Database | MongoDB via Mongoose 8 (in-memory fallback for zero-setup runs) |
 | Auth | JWT, bcryptjs, Google Identity Services |
 | Email | Nodemailer (Gmail SMTP), Resend fallback |
-| AI | Google Gemini or Anthropic Claude, with a deterministic rule engine as fallback |
+| AI | Groq (Llama 3.3) or Anthropic Claude, with a deterministic rule engine as fallback |
 | Uploads | Multer |
 
 ---
@@ -208,8 +211,8 @@ of them. Full documentation is in [`backend/.env.example`](backend/.env.example)
 |---|---|---|
 | `MONGO_URI` | MongoDB connection string | Temporary in-memory database |
 | `JWT_SECRET` | Signs login tokens | **Set this one** |
-| `GEMINI_API_KEY` | Live AI answers | Built-in rule engine answers instead |
-| `ANTHROPIC_API_KEY` | Alternative AI provider | Used only if Gemini key is empty |
+| `GROQ_API_KEY` | Live AI answers | Built-in rule engine answers instead |
+| `ANTHROPIC_API_KEY` | Alternative AI provider | Used only if the Groq key is empty |
 | `GOOGLE_CLIENT_ID` | Sign in with Google | Button is hidden |
 | `GMAIL_USER` / `GMAIL_APP_PASSWORD` | Sends signup OTP emails | OTP is printed to the server terminal |
 | `RESEND_API_KEY` | Alternative mail provider | Used only if Gmail is not set |
@@ -285,7 +288,7 @@ BhumiGuide/
 │       │   └── offices.js         Office templates
 │       └── utils/
 │           ├── aiRuleBased.js     Deterministic fallback answers
-│           ├── gemini.js          Live model client
+│           ├── groq.js            Live model client (Groq, OpenAI-compatible)
 │           ├── googleAuth.js      Google ID-token verification
 │           ├── mailer.js          Gmail SMTP OTP delivery
 │           └── identifyDoc.js     Filename → document matching
@@ -293,7 +296,7 @@ BhumiGuide/
     └── src/
         ├── App.jsx                Routing, auth state, language provider
         ├── i18n.js                Interface dictionary, 9 languages
-        ├── i18n.places.js         826 place names in each script
+        ├── i18n.places.js         1,511 place names in each script
         ├── api/                   Thin fetch wrappers per resource
         ├── components/            UI kit, layout, modals, location picker
         ├── data/                  Client-side reference data and contacts
@@ -313,7 +316,7 @@ talukas, its charge rules, and its document overrides.
 `states/index.js` is the only place that decides which states the app supports:
 
 ```js
-const STATES = [maharashtra, karnataka, madhyaPradesh];
+const STATES = [maharashtra, karnataka, madhyaPradesh, gujarat, rajasthan];
 ```
 
 Copy a state file, fill it in, add it to that array, restart. Nothing else in
@@ -350,7 +353,7 @@ returning a finished sentence it returns an English template plus its values:
 
 The frontend renders it through the same translation machinery as the rest of
 the interface, so the state name, the record name and the office name are
-translated too. Shipping a second copy of the dictionary to the backend — 826
+translated too. Shipping a second copy of the dictionary to the backend — 1,511
 place names included — would have been the alternative.
 
 ---
@@ -365,11 +368,15 @@ line between real and simulated sits.
 | Land records, charge rates, document rules | **Real**, sourced from state government portals, with the URL recorded per entry |
 | District and taluka lists | **Real**, except as noted below |
 | Document readiness check | **Real** — runs on the files you provide |
-| Office addresses, phone numbers, distances | **Generated.** No public API publishes this for India |
+| Office addresses and phone numbers | **Generated.** No public API publishes this for India. Distance to an office is not shown at all — the only figure available was a seeded one, which looked precise without being measured |
 | Legal verification progress bar | **Simulated timer.** Real title verification needs a lawyer and record access this app does not have |
 | Local contacts list | **Compiled by hand** for this project, not published by any department; covers only the areas collected so far |
 | MP tehsil lists | **17 of 55 districts** carry only their headquarters town. Available sources give a count with no names, or contradict each other |
-| Place names in non-local scripts | **Transliterations.** Official spelling for each state's own language; the local press form elsewhere |
+| Gujarat taluka list | 262 talukas across 34 districts, current to the 2 Oct 2025 notification that created Vav-Tharad. **Panchmahal carries only Godhra** — no second source for its other talukas could be reached. Press reports say Gujarat now has 269 talukas; the per-district sum here is 262, and the missing names were not invented |
+| Rajasthan tehsil list | 425 tehsils across 41 districts, current to the 1 Jan 2025 reorganisation that dissolved 9 districts. One row in the official PDF was unreadable in its legacy font, so Bikaner's **Jasrasar** comes from a secondary source |
+| Rajasthan stamp surcharge | 30% of duty is used. Two secondary reports in early 2026 claimed a higher rate above ₹10 lakh of duty; no gazette notification confirming it was found, and the app says so on screen |
+| Local contacts outside the first three states | **None.** Gujarat and Rajasthan have no contact entries — the list falls back to district level and says so, rather than inventing names |
+| Place names in non-local scripts | **Transliterations.** Official spelling for each state's own language; the local press form elsewhere. For small tehsils with no published spelling the name was written out sound by sound, so a few may not match what the local record office prints |
 | Stamp duty figures | **Indicative, not legal advice.** Confirm with the Sub-Registrar office |
 
 The rule followed throughout: when a fact could not be verified, the gap is
@@ -380,7 +387,7 @@ plausible.
 
 ## Roadmap
 
-- [ ] Seven more states — ready-made district data is already stubbed in `seedData/states/`
+- [ ] More states — each one is a new file in `seedData/states/`, researched from that state's own revenue portal
 - [ ] Real office directories where a state publishes them
 - [ ] OCR on uploaded documents instead of filename matching
 - [ ] Export the personalised procedure as a printable PDF checklist

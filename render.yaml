@@ -1,0 +1,29 @@
+# Render Blueprint — BhumiGuide Intelligence API
+# Render Dashboard → New → Blueprint → pick this repository.
+# Set the three secret values (MONGO_URI, JWT_SECRET, GROQ_API_KEY) when asked.
+services:
+  - type: web
+    name: bhumiguide-api
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # mongodb-memory-server is only used for local development; stop its
+      # installer from downloading a MongoDB binary during the build.
+      - key: MONGOMS_DISABLE_POSTINSTALL
+        value: "1"
+      - key: MONGO_URI          # MongoDB Atlas connection string
+        sync: false
+      - key: JWT_SECRET         # long random string
+        sync: false
+      - key: GROQ_API_KEY       # https://console.groq.com/keys
+        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile

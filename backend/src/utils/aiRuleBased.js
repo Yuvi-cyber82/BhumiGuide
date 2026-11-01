@@ -4,7 +4,7 @@ const rulesFor = (state) => CHARGE_RULES[state] || CHARGE_RULES.Maharashtra;
 
 /**
  * Deterministic, zero-cost fallback answer engine. Used automatically when
- * no GEMINI_API_KEY is configured, and as a safety net if the live LLM
+ * no GROQ_API_KEY is configured, and as a safety net if the live LLM
  * call fails for any reason (e.g. rate limit, no network).
  *
  * ── Why this returns segments instead of a finished sentence ───────────
@@ -79,7 +79,7 @@ export function aiAnswerRuleBased(qRaw, loc = {}, profile) {
 
   if (has("office", "where to go", "kaha jana", "sub registrar", "tehsil", "visit"))
     return seg(
-      "You will deal with these offices:\n\n• {0} — land record extract, mutation, heir certificates\n• Sub-Registrar Office — sale deed registration, encumbrance certificate\n• Collector Office — NA conversion and appeals\n• Municipal body or Gram Panchayat — property tax and layout approval\n\nThe Land Buying page shows the actual addresses, working hours and distance for {1}, so you do not travel to the wrong counter.",
+      "You will deal with these offices:\n\n• {0} — land record extract, mutation, heir certificates\n• Sub-Registrar Office — sale deed registration, encumbrance certificate\n• Collector Office — NA conversion and appeals\n• Municipal body or Gram Panchayat — property tax and layout approval\n\nThe Land Buying page shows the actual addresses and working hours for {1}, so you do not travel to the wrong counter.",
       r.office,
       loc.taluka || loc.district || "your taluka"
     );

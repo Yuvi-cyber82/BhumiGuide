@@ -28,6 +28,18 @@ export const STATE_OFFICIAL_LINKS = {
     rera: { label: "RERA Madhya Pradesh", url: "https://rera.mp.gov.in/" },
     eStamping: { label: "MP IGR — registration & e-stamping", url: "https://mpigr.gov.in/" },
   },
+  Gujarat: {
+    landRecords: { label: "AnyRoR — 7/12 Utara, 8-A & Property Card", url: "https://anyror.gujarat.gov.in/" },
+    revenue: { label: "Revenue Department, Gujarat", url: "https://revenuedepartment.gujarat.gov.in/" },
+    rera: { label: "GujRERA", url: "https://gujrera.gujarat.gov.in/" },
+    eStamping: { label: "Garvi — registration, e-stamping & Index-2", url: "https://garvi.gujarat.gov.in/" },
+  },
+  Rajasthan: {
+    landRecords: { label: "Apna Khata — Jamabandi & land records", url: "https://apnakhata.rajasthan.gov.in/" },
+    revenue: { label: "Board of Revenue / Land Revenue Department, Rajasthan", url: "https://landrevenue.rajasthan.gov.in/" },
+    rera: { label: "RERA Rajasthan", url: "https://rera.rajasthan.gov.in/" },
+    eStamping: { label: "e-Panjiyan — registration & e-stamping", url: "https://epanjiyan.rajasthan.gov.in/" },
+  },
 };
  
 // These work the same regardless of which state is selected.

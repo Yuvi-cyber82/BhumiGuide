@@ -1,6 +1,8 @@
 import maharashtra from "./maharashtra.js";
 import karnataka from "./karnataka.js";
 import madhyaPradesh from "./madhyaPradesh.js";
+import gujarat from "./gujarat.js";
+import rajasthan from "./rajasthan.js";
 
 /**
  * PHASE 1 — active states.
@@ -21,7 +23,7 @@ import madhyaPradesh from "./madhyaPradesh.js";
  * 3. Restart the server (`npm run dev`) — it re-seeds automatically on boot.
  * That's it. No other file in the project needs to change.
  */
-const STATES = [maharashtra, karnataka, madhyaPradesh];
+const STATES = [maharashtra, karnataka, madhyaPradesh, gujarat, rajasthan];
 
 export const LOCATIONS = Object.fromEntries(STATES.map((s) => [s.name, s.districts]));
 export const CHARGE_RULES = Object.fromEntries(STATES.map((s) => [s.name, s.chargeRules]));

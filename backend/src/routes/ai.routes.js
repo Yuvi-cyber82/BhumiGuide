@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { optionalAuth } from "../middleware/auth.js";
 import { aiAnswerRuleBased, buildAnswerText } from "../utils/aiRuleBased.js";
-import { askGemini } from "../utils/gemini.js";
+import { askGroq } from "../utils/groq.js";
 import { CHARGE_RULES } from "../seedData/locations.js";
 import Progress from "../models/Progress.js";
 
@@ -37,6 +37,16 @@ Style rules:
 - Always clarify this is general guidance, not legal advice, when the question is about a specific dispute or transaction risk.
 - If the user hasn't set a location and the question needs one, ask them to select state & district in the app first.
 - Never invent a specific law section or court case; speak in general terms instead.
+
+Format rules (the app renders your reply, so these matter):
+- Reply in plain Markdown only. Never write HTML tags — no <br>, no <div>, no <table>.
+- Start with the answer itself. Do not open with a bold restatement of the question.
+- Prefer a short paragraph plus a bullet list. Use "- " for bullets and "1. " for ordered steps.
+- Use a table only for a genuine side-by-side comparison, at most 3 columns, one short line per cell.
+  If a cell would need a line break or a nested list, use a bullet list instead of a table.
+- Bold at most a few key terms. Do not bold whole sentences or every cell of a table.
+- Headings are optional; if used, "### " and no deeper.
+- No emoji.
 ${langName && langName !== "English" ? `\nLanguage:
 - Write the entire answer in ${langName}, in that language's own script. The user has chosen ${langName} in the app.
 - Keep document names, portal names and acronyms (7/12, RTC, Khasra, Khatauni, PAN, Aadhaar, NOC, NA, EC) in the form a reader of ${langName} would see on the actual document.
@@ -49,7 +59,7 @@ router.post("/ask", optionalAuth, async (req, res) => {
     return res.status(400).json({ error: "A question is required." });
   }
 
-  const useLive = !!process.env.GEMINI_API_KEY;
+  const useLive = !!process.env.GROQ_API_KEY;
   let answer;
   /* Set only on the rule-based path: the English templates plus their values,
    * for the frontend to translate. See utils/aiRuleBased.js. */
@@ -69,10 +79,10 @@ router.post("/ask", optionalAuth, async (req, res) => {
       priorTurns = firstUserIdx === -1 ? [] : priorTurns.slice(firstUserIdx);
 
       const messages = [...priorTurns, { role: "user", content: question }];
-      answer = await askGemini({ system: buildSystemPrompt(loc, profile, LANG_NAMES[lang]), messages });
-      source = "gemini";
+      answer = await askGroq({ system: buildSystemPrompt(loc, profile, LANG_NAMES[lang]), messages });
+      source = "groq";
     } catch (err) {
-      console.error("Gemini call failed, falling back to rule-based answer:", err.message);
+      console.error("Groq call failed, falling back to rule-based answer:", err.message);
       ({ segments } = aiAnswerRuleBased(question, loc, profile));
       answer = buildAnswerText({ segments });
     }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Home, MapPin, FileText, Calculator, Bot, AlertTriangle, Check, IndianRupee, CheckCircle2, Stamp, ClipboardList } from "lucide-react";
+import { Home, MapPin, FileText, Calculator, Bot, AlertTriangle, Check, IndianRupee, CheckCircle2, Stamp, ClipboardList, Info } from "lucide-react";
 import { LocationFields } from "../components/location";
 import { Breadcrumb, Btn, Card, IconBadge, Input, Label, Notice, PageHead, Pill, Select } from "../components/ui";
 import { rulesFor } from "../data/locations";
@@ -34,9 +34,14 @@ export function ChargesPage({ t, onNav, loc, setLoc, toast }) {
     const localBody = (v * (r.localBody || 0)) / 100;
     let reg = (v * r.reg) / 100;
     let capped = false;
+    let regExempt = false;
     if (r.regCap && reg > r.regCap) { reg = r.regCap; capped = true; }
+    /* Gujarat is the case this exists for: it gives a woman buying in her own
+     * name no stamp-duty discount at all, but exempts her from the whole
+     * registration fee. Modelling that as a stamp rebate would be wrong. */
+    if (buyer === "Female" && r.femaleRegExempt) { reg = 0; capped = false; regExempt = true; }
     const handling = 5000, misc = 2000;
-    setResult({ v, stampRate, stamp, reg, capped, localBody, localRate: r.localBody, handling, misc, adjustments, total: stamp + reg + localBody + handling + misc, baseStamp: r.stamp, regRate: r.reg, cap: r.regCap });
+    setResult({ v, stampRate, stamp, reg, capped, regExempt, localBody, localRate: r.localBody, handling, misc, adjustments, total: stamp + reg + localBody + handling + misc, baseStamp: r.stamp, regRate: r.reg, cap: r.regCap, stampNote: r.stampNote });
   };
 
   return (
@@ -102,7 +107,7 @@ export function ChargesPage({ t, onNav, loc, setLoc, toast }) {
                   <tbody>
                     {[
                       [tr("Stamp duty"), `${result.stampRate}%`, result.stamp, tr("Paid to the state government on the property value.")],
-                      [tr("Registration fee"), result.capped ? fillText(tr, "{0}% (capped)", result.regRate) : `${result.regRate}%`, result.reg, result.capped ? fillText(tr, "Capped at {0} in {1}.", inr(result.cap), tr(loc.state)) : tr("Charged by the Sub-Registrar for registering the deed.")],
+                      [tr("Registration fee"), result.regExempt ? tr("exempt") : result.capped ? fillText(tr, "{0}% (capped)", result.regRate) : `${result.regRate}%`, result.reg, result.regExempt ? fillText(tr, "A woman buying in her own name pays no registration fee in {0}.", tr(loc.state)) : result.capped ? fillText(tr, "Capped at {0} in {1}.", inr(result.cap), tr(loc.state)) : tr("Charged by the Sub-Registrar for registering the deed.")],
                       ...(result.localRate ? [[tr("Local body / cess"), `${result.localRate}%`, result.localBody, tr("Levied by the municipal body or corporation.")]] : []),
                       [tr("Document handling"), "—", result.handling, tr("Drafting, printing and processing charges.")],
                       [tr("Miscellaneous"), "—", result.misc, tr("Agent, notary and small office charges.")],
@@ -123,6 +128,17 @@ export function ChargesPage({ t, onNav, loc, setLoc, toast }) {
                   </tbody>
                 </table>
               </Card>
+
+              {/* How the headline rate is put together. Gujarat's 4.9% and
+                * Rajasthan's 7.8% are both a basic rate plus a surcharge, so
+                * without this the figure looks wrong against the state's own
+                * published rate. States that have nothing to explain simply
+                * leave stampNote out. */}
+              {result.stampNote && (
+                <Notice tone="blue" icon={Info} title={tr("How this rate is made up")}>
+                  {tr(result.stampNote)}
+                </Notice>
+              )}
 
               {result.adjustments.length > 0 && (
                 <Notice tone="green" icon={CheckCircle2} title={tr("Concessions applied")}>
