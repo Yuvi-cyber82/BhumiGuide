@@ -3,5 +3,7 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/((?!assets/|privacy\\.html|terms\\.html).*)", "destination": "/index.html" }
+  ]
 }
